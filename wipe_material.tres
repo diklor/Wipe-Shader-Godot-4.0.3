@@ -1,0 +1,38 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dgl8w2su5gcf4"]
+
+[sub_resource type="Shader" id="Shader_fbr8s"]
+code = "shader_type canvas_item;
+
+uniform float percentage:hint_range(0.0,1,.01);
+uniform float masked_alpha:hint_range(0,1,.01)=1;
+uniform float unmasked_alpha:hint_range(0,1,.01);
+
+uniform bool horizontal=false;
+uniform bool invert=true;
+
+
+
+void fragment() {
+	vec4 main_tex=texture(TEXTURE,UV);
+	COLOR.a=main_tex.a;
+	
+	float uvPOS=UV.y;
+	float step_value=unmasked_alpha+step(uvPOS,percentage);
+	
+	if(horizontal){ uvPOS=UV.x; }
+	if(invert){
+		step_value=unmasked_alpha+1.0-step(uvPOS,percentage);
+	}
+	
+
+	COLOR.a=(main_tex.a)*step_value*masked_alpha;
+}
+"
+
+[resource]
+shader = SubResource("Shader_fbr8s")
+shader_parameter/percentage = 0.27
+shader_parameter/masked_alpha = 1.0
+shader_parameter/unmasked_alpha = 0.15
+shader_parameter/horizontal = false
+shader_parameter/invert = true
